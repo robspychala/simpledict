@@ -16,7 +16,7 @@ Missing features
 
 Other libraries that provide this functionality and more in python
 
-* []@j2lab's](http://twitter.com/j2labs) [DictShield](../../j2labs/DictShield) - amazing library
+* [@j2lab's](http://twitter.com/j2labs) [DictShield](../../j2labs/DictShield) - amazing library
 
 # Example
 
@@ -34,13 +34,13 @@ class Tweet(simpledict.Dictionary):
     def character_count():
         return len(self.text)
 ```
-        
+
 and then to create the object:
 
 ```python
 tweet = Tweet(user="robspychala", text="hey everyone, what's cookin'?")
 ```
-    
+
 and to serialize to a dictionary
 
 ```python
@@ -52,13 +52,14 @@ and of course to de-serialize back to an object, you'd
 ```python
 tweet = Tweet(**tweet_data)
 ```
-    
 
 ## Minimization
-    
+
 If you would like to minimize the field names to what is defined in the field_* values you pass in a minimize=True value to the to_dict() method
 
-    minimized_tweet_data = tweet.to_dict(minimize=True)
+```python
+minimized_tweet_data = tweet.to_dict(minimize=True)
+```
     
 and even if you have minimized data, you'd still be able to de-serialize it to a dictionary, ex:
 
@@ -67,7 +68,6 @@ minimized_tweet = Tweet(**minimized_tweet_data)
 
 assert(tweet.title == minimized_tweet.title, tweet.user == minimized_tweet.user)
 ```
-
 
 ## Properties
 
@@ -88,7 +88,6 @@ tweet_data = tweet.to_dict(omit_fields={"user":None})
 
 assert(not tweet_data.has_key("user"))
 ```
-    
     
 # License
 
