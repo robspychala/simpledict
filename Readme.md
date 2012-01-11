@@ -102,7 +102,8 @@ class EmbeddedTest(simpledict.Dictionary):
     field_author = "a"
     field_toc = ("o", list, EmbeddedInnerTest)
     
-embedded_data = { 'title': "Embedded Title", 'author': "Embedded Author", 'toc': [{'t':'Chapter One', 'p': 100}, {'t':'Chapter Two', 'p': 201}]}
+embedded_data = { 'title': "Embedded Title", 'author': "Embedded Author", 
+                    'toc': [{'t':'Chapter One', 'p': 100}, {'t':'Chapter Two', 'p': 201}]}
 embedded_obj = EmbeddedTest(**embedded_data)
 embedded_obj.title
 embedded_obj.author
@@ -139,7 +140,8 @@ and then to use this Entry class in your app and insert into a mongodb, it would
 entry = model.Entry(email="robspychala@gmail.com",
                     password="mysekr3t").insert()
 entry_dict = entry.to_dict(minimize=False)
-self.response.out.write(json.dumps({'success': True, 'result': entry_dict}, default=simpledict.json_date_handler))
+self.response.out.write(json.dumps({'success': True, 'result': entry_dict}, 
+                            default=simpledict.json_date_handler))
 ```
 
 # License
