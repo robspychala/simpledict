@@ -26,13 +26,12 @@ Creating a simple model would involve creating a Class that subclasses simpledic
 import simpledict
 
 class Tweet(simpledict.Dictionary):
-    field_user = "u"
-    field_text = "t"
-    
-    field_count = "c"
-    @property
-    def character_count():
-        return len(self.text)
+  field_user = "u"
+  field_text = "t"
+  field_count = "c"
+  property
+  def character_count():
+    return len(self.text)
 ```
 
 and then to create the object:
@@ -88,7 +87,61 @@ tweet_data = tweet.to_dict(omit_fields={"user":None})
 
 assert(not tweet_data.has_key("user"))
 ```
+   
+### Embedded Documents
+
+```python
+import simpledict
+
+class EmbeddedInnerTest(simpledict.Dictionary):
+    field_title = "t"
+    field_page = "p"
     
+class EmbeddedTest(simpledict.Dictionary):
+    field_title = "t"
+    field_author = "a"
+    field_toc = ("o", list, EmbeddedInnerTest)
+    
+embedded_data = { 'title': "Embedded Title", 'author': "Embedded Author", 'toc': [{'t':'Chapter One', 'p': 100}, {'t':'Chapter Two', 'p': 201}]}
+embedded_obj = EmbeddedTest(**embedded_data)
+embedded_obj.title
+embedded_obj.author
+embedded_obj.toc[0].title
+embedded_obj.toc[1].title
+embedded_obj.toc[1].page
+```
+
+### MongoDB example
+
+```python
+import simpledict
+import pymongo
+
+from pymongo import Connection
+connection = Connection()
+db = connection.main_database
+
+class Entry(simpledict.Dictionary):
+
+  field_email = "e"
+  field_password = "p"
+
+  def insert(self):
+    if not db or not self.email or not self.password:
+      raise Exception()
+    db[self.__class__.__name__.lower()].insert(self.to_dict(minimize=True))
+    return self
+```
+
+and then to use this Entry class in your app and insert into a mongodb, it would involve
+
+```python
+entry = model.Entry(email="robspychala@gmail.com",
+                    password="mysekr3t").insert()
+entry_dict = entry.to_dict(minimize=False)
+self.response.out.write(json.dumps({'success': True, 'result': entry_dict}, default=simpledict.json_date_handler))
+```
+
 # License
 
 The simpledict component is released under the MIT License.
