@@ -29,7 +29,7 @@ class Tweet(simpledict.Dictionary):
   field_user = "u"
   field_text = "t"
   field_count = "c"
-  property
+  @property
   def character_count():
     return len(self.text)
 ```
