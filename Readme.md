@@ -122,7 +122,7 @@ from pymongo import Connection
 connection = Connection()
 db = connection.main_database
 
-class Entry(simpledict.Dictionary):
+class User(simpledict.Dictionary):
 
   field_email = "e"
   field_password = "p"
@@ -134,10 +134,10 @@ class Entry(simpledict.Dictionary):
     return self
 ```
 
-and then to use this Entry class in your app and insert into a mongodb, it would involve
+and then to use this User class in your app and insert into a mongodb, it would involve
 
 ```python
-entry = model.Entry(email="robspychala@gmail.com",
+entry = model.User(email="robspychala@gmail.com",
                     password="mysekr3t").insert()
 entry_dict = entry.to_dict(minimize=False)
 self.response.out.write(json.dumps({'success': True, 'result': entry_dict}, 
