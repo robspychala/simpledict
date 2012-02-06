@@ -139,6 +139,32 @@ class Dictionary:
   >>> ret = prop_dict_test3.to_dict(properties={"titles":{'title_length':None}})
   >>> ret == {'s': 'my secret', 't': [{'tl': 6, 't': 'XoXoXo'}, {'tl': 4, 't': 'YoYo'}]}
   True
+  >>> class SingleEmbeddedTest1(Dictionary):
+  ...   field_pizza = "p"
+  ...   field_burger = "b"
+  >>> class SingleTest1(Dictionary):
+  ...   field_lunch = ("l", SingleEmbeddedTest1)
+  ...   field_title = "t"
+  ...
+  >>> prop_single_dict_test = SingleTest1(title="things i eat", lunch=SingleEmbeddedTest1(pizza="of course", burger="on fridays"))
+  >>> prop_single_dict_test.title == "things i eat"
+  True
+  >>> prop_single_dict_test.lunch != None
+  True
+  >>> prop_single_dict_test.lunch.pizza == "of course"
+  True
+  >>> ret = prop_single_dict_test.to_dict()
+  >>> ret == {'l': {'p': 'of course', 'b': 'on fridays'}, 't': 'things i eat'}
+  True
+  >>> prop_single_dict_test_obj = SingleTest1(**{'l': {'p': 'of course', 'b': 'on fridays'}, 't': 'things i eat'})
+  >>> prop_single_dict_test_obj.title == prop_single_dict_test.title
+  True
+  >>> prop_single_dict_test_obj.lunch.pizza == prop_single_dict_test.lunch.pizza
+  True
+  >>> prop_single_dict_test_obj.lunch.burger == prop_single_dict_test.lunch.burger
+  True
+  >>> prop_single_dict_test_obj.lunch.burger == prop_single_dict_test.lunch.pizza
+  False
   """
   
   def __init__(self, **entries):
@@ -163,13 +189,10 @@ class Dictionary:
             self.__dict__[key] = [key_metadata[2](**obj) for obj in self.__dict__[key]]
         else:
           raise ValueError("%s type mis match; expecting %s for %s and got %s" % (self.__class__.__name__, key_metadata, key, value))
-      elif len(key_metadata) == 2:
-        if isinstance(value, key_metadata[1]):
-          pass
-        else:
-          raise ValueError("%s type mis match; expecting %s for %s and got %s" % (self.__class__.__name__, key_metadata, key, value))
+      elif len(key_metadata) == 2 and not isinstance(value, key_metadata[1]):
+        self.__dict__[key] = key_metadata[1](**self.__dict__[key])
         
-  def to_dict(self, minimize=True, properties={}, omit_fields={}):
+  def to_dict(self, minimize=True, strip_none=False, properties={}, omit_fields={}):
     def get_value(type_description, value, name):
       if isinstance(value, types.ListType):
         return [val.to_dict(minimize=minimize, properties=properties.get(name, {}), omit_fields=omit_fields.get(name, {})) for val in value]
@@ -178,7 +201,7 @@ class Dictionary:
       else:
         return value
     def omit(name):
-      if name in omit_fields.keys() and not isinstance(omit_fields[name], types.DictType):
+      if name in omit_fields.keys() and not isinstance(omit_fields[name], types.DictType) or strip_none and not full_dict[name]:
         return True
       return False
     fields_map = self._get_fields_map(minimize_id_key=False)
