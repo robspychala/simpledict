@@ -21,6 +21,20 @@ class Dictionary:
   
   Create the object from a "minimized" dictionary that has been minimized
   >>> test_obj_from_minimized = Test(**minimized_data)
+  >>> test_obj_from_minimized['title']
+  'This is the title of the book 1'
+  >>> test_obj_from_minimized['t']
+  'This is the title of the book 1'
+  >>> test_obj_from_minimized.title
+  'This is the title of the book 1'
+  >>> test_obj_from_minimized['title'] = 'This is the ammended title of the book 1'
+  >>> test_obj_from_minimized.title
+  'This is the ammended title of the book 1'
+  >>> test_obj_from_minimized['title']
+  'This is the ammended title of the book 1'
+  >>> test_obj_from_minimized['t']
+  'This is the ammended title of the book 1'
+  >>> test_obj_from_minimized['t'] = 'This is the title of the book 1'
   >>> test_obj_from_minimized.title
   'This is the title of the book 1'
   >>> test_obj_from_minimized.author
@@ -170,27 +184,27 @@ class Dictionary:
   def __init__(self, **entries):
     fields_minimized_map = self._get_fields_map(minimize_id_key=True)
     if "_id" in entries:
-       self.__dict__ = {"_id":entries["_id"]}
+       setattr(self, "_id", entries["_id"])
        del entries["_id"]
     if not set(entries.keys()) <= set([value[0] for value in fields_minimized_map.values()]) and not set(entries.keys()) <= set(fields_minimized_map.keys()):
       missing =  set(entries.keys()) - set([value[0] for value in fields_minimized_map.values()]) | set([fields_minimized_map[min_key] for min_key in (set(entries.keys()) - set(fields_minimized_map.keys())) if fields_minimized_map.has_key(min_key)])
       raise ValueError("field_%s class variables missing in your Dictionary subclass" % (" field_".join(missing)) )
       pass
-    self.__dict__.update(dict((fields_minimized_map[name][0], entries[name]) for name in entries if name in fields_minimized_map))
-    self.__dict__.update(dict((name, entries[name]) for name in entries if name not in fields_minimized_map))
+    map(lambda name: setattr(self, fields_minimized_map[name][0], entries[name]), [name for name in entries if name in fields_minimized_map])
+    map(lambda name: setattr(self, name, entries[name]), [name for name in entries if name not in fields_minimized_map])
     for key in self.__dict__:
       if key == "_id":
         continue
-      value = self.__dict__[key]
+      value = getattr(self, key)
       key_metadata = fields_minimized_map[self._get_minimized_name(key)]
       if len(key_metadata) == 3:
         if isinstance(value, key_metadata[1]):
           if len(value) > 0 and not isinstance(value[0], key_metadata[2]):
-            self.__dict__[key] = [key_metadata[2](**obj) for obj in self.__dict__[key]]
+            setattr(self, key, [key_metadata[2](**obj) for obj in self.__dict__[key]]);
         else:
           raise ValueError("%s type mis match; expecting %s for %s and got %s" % (self.__class__.__name__, key_metadata, key, value))
       elif len(key_metadata) == 2 and not isinstance(value, key_metadata[1]):
-        self.__dict__[key] = key_metadata[1](**self.__dict__[key])
+        setattr(self, key, key_metadata[1](**self.__dict__[key]))
         
   def to_dict(self, minimize=True, strip_none=False, properties={}, omit_fields={}):
     def get_value(type_description, value, name):
@@ -249,6 +263,18 @@ class Dictionary:
       else:
         raise ValueError("field %s can only be of type tupule or str, found %s" % (name, value))
     return dict(get_dict_values(name[6:], getattr(self, name)) for name in dir(self) if name.startswith('field_') and not callable(getattr(self, name)))
-        
+    
+  def __setitem__(self, key, value):
+    fields_minimized_map = self._get_fields_map(minimize_id_key=True)
+    if fields_minimized_map.has_key(key):
+      key = fields_minimized_map[key][0]
+    setattr(self, key, value)
+      
+  def __getitem__(self, key):
+    fields_minimized_map = self._get_fields_map(minimize_id_key=True)
+    if fields_minimized_map.has_key(key):
+      key = fields_minimized_map[key][0]
+    return getattr(self, key)
+    
 def to_json(obj, minimize=True):
   return json.dumps(obj.to_dict(minimize=minimize), default=json_date_handler)
