@@ -12,11 +12,11 @@ Makes dict modeling easy for document based databases with minimal extra funcito
 Missing features
 
 * No type system
-* No validation
+* No validation - up to you as the developer to add it.
 
 Other libraries that provide this functionality and more in python
 
-* [@j2lab's](http://twitter.com/j2labs) [DictShield](../../j2labs/DictShield) - amazing library
+* [@j2lab's](http://twitter.com/j2labs) [DictShield](../../j2labs/DictShield) - great library with a type system and more
 
 # Example
 
@@ -87,8 +87,24 @@ tweet_data = tweet.to_dict(omit_fields={"user":None})
 
 assert(not tweet_data.has_key("user"))
 ```
-   
+
 ### Embedded Documents
+
+```python
+import simpledict
+
+class UserSettings(Dictionary):
+    field_color = "c"
+    field_size = "s"
+    
+class User(Dictionary):
+    field_settings = ("s", UserSettings)
+    field_name = "n"
+
+user = User(name="Price", settings=UserSettings(color="purple", size="medium"))
+```
+
+### array of Embedded Documents
 
 ```python
 import simpledict
@@ -111,6 +127,7 @@ embedded_obj.toc[0].title
 embedded_obj.toc[1].title
 embedded_obj.toc[1].page
 ```
+
 
 ### MongoDB example
 
@@ -143,6 +160,7 @@ entry_dict = entry.to_dict(minimize=False)
 self.response.out.write(json.dumps({'success': True, 'result': entry_dict}, 
                             default=simpledict.json_date_handler))
 ```
+
 
 # License
 
