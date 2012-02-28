@@ -18,6 +18,12 @@ Other libraries that provide this functionality and more in python
 
 * [@j2lab's](http://twitter.com/j2labs) [DictShield](../../j2labs/DictShield) - great library with a type system and more
 
+# Installation
+
+Easiest way to install is from PyPI
+
+```pip install simpledict```
+
 # Example
 
 Creating a simple model would involve creating a Class that subclasses simpledict.Dictionary
