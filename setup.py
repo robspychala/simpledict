@@ -6,7 +6,7 @@ if sys.version_info < (2,6):
     
 setup(
     name='simpledict',
-    version='0.1',
+    version='0.1.1',
     description='Simple dictionary wrapper',
     author='Robert Spychala',
     author_email="robspychala@gmail.com",
