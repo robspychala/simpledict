@@ -1,0 +1,1 @@
+please visit http://github.com/robspychala/simpledict for help
