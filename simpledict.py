@@ -47,6 +47,29 @@ class Dictionary:
   >>> test_obj_from_normal.author
   'And the author 2'
   
+  Test location
+  >>> class Location(Dictionary): field_loc = ("l", list, float);
+  >>> location_1 = Location(loc=[-23.23242323, 23.23131232])
+  >>> location_1.loc
+  [-23.23242323, 23.23131232]
+  >>> location_1.to_dict(minimize=True)
+  {'l': [-23.23242323, 23.23131232]}
+  >>> location_1_dict = {'l': [-23.23242323, 23.23131232]}
+  >>> location_2 = Location(**location_1_dict)
+  >>> location_1.loc[0]==location_2.loc[0]
+  True
+  >>> location_1.loc[1]==location_2.loc[1]
+  True
+  
+  Test numbers
+  >>> test_obj_from_normal_int = Test(title=0.23242323, author=123)
+  >>> test_obj_from_normal_int.title
+  0.23242323
+  >>> test_obj_from_normal_int.author
+  123
+  >>> test_obj_from_normal_int.to_dict(minimize=True)
+  {'a': 123, 't': 0.23242323}
+  
   Get dict back from object that was created from minimized data
   >>> ret = test_obj_from_minimized.to_dict()
   >>> ret == {'a': 'And the author 1', 't': 'This is the title of the book 1'}
@@ -209,7 +232,10 @@ class Dictionary:
   def to_dict(self, minimize=True, strip_none=False, properties={}, omit_fields={}):
     def get_value(type_description, value, name):
       if isinstance(value, types.ListType):
-        return [val.to_dict(minimize=minimize, properties=properties.get(name, {}), omit_fields=omit_fields.get(name, {})) for val in value]
+        if not (type_description[2] is types.FloatType or type_description[2] is types.IntType):
+            return [val.to_dict(minimize=minimize, properties=properties.get(name, {}), omit_fields=omit_fields.get(name, {})) for val in value]
+        else:
+            return [val for val in value]
       elif isinstance(value, types.InstanceType):
         return value.to_dict(minimize=minimize, properties=properties.get(name, {}), omit_fields=omit_fields.get(name, {}))
       else:
