@@ -47,3 +47,5 @@ Missing features
   * No validation - up to you as the developer to add it.
 """
 )
+
+# python setup.py register sdist upload
