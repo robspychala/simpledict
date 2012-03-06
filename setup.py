@@ -1,9 +1,15 @@
-import sys
-from distutils.core import setup
+import sys, os
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
 
 if sys.version_info < (2,6):
-    raise NotImplementedError("Sorry, you need at least Python 2.6 or Python 3.x to use bottle.")
+    raise NotImplementedError("Sorry, you need at least Python 2.6 or Python 3.x to use simpledict.")
     
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+        
 setup(
     name='simpledict',
     version='0.2',
@@ -27,25 +33,8 @@ setup(
             "License :: OSI Approved :: MIT License",
             "Operating System :: OS Independent"
             ],
-    long_description = """\
-Makes dict modeling easy for document based databases with minimal extra funcitonality.
-
-more info available at http://github.com/robspychala/simpledict
-
------------------
-
-  * Permissioning
-  * Embedded documents
-  * Minimization of field names
-  * Python Properties
-  * One python file
-  * Doctests - functionality is unit tested
-
-Missing features
-
-  * No type system
-  * No validation - up to you as the developer to add it.
-"""
+    long_description=read('README.md'),
+    test_suite="tests"
 )
 
 # python setup.py register sdist upload
