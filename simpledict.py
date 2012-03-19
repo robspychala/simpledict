@@ -244,7 +244,7 @@ class Dictionary:
             return False
         fields_map = self._get_fields_map(minimize_id_key=False)
         fields_map.update({"_id": ("_id",)})
-        full_dict = dict((prop, getattr(self,prop)) for prop in properties)
+        full_dict = dict((prop, getattr(self, prop)) for prop in properties if hasattr(self, prop))
         full_dict.update(self.__dict__)
         fields_map.update(dict((key, (None,)) for key in full_dict.keys() if key not in fields_map))
         if minimize:
