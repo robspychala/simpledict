@@ -12,7 +12,7 @@ def read(fname):
         
 setup(
     name='simpledict',
-    version='0.2.2',
+    version='0.2.3',
     description='Simple dictionary wrapper',
     author='Robert Spychala',
     author_email="robspychala@gmail.com",
@@ -33,7 +33,7 @@ setup(
             "License :: OSI Approved :: MIT License",
             "Operating System :: OS Independent"
             ],
-    long_description=read('README.md'),
+    long_description=read('Readme.md'),
     test_suite="tests"
 )
 
