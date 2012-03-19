@@ -12,7 +12,7 @@ def read(fname):
         
 setup(
     name='simpledict',
-    version='0.2.1',
+    version='0.2.2',
     description='Simple dictionary wrapper',
     author='Robert Spychala',
     author_email="robspychala@gmail.com",
