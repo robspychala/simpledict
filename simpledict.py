@@ -230,7 +230,7 @@ class Dictionary:
     def to_dict(self, minimize=True, strip_none=False, properties={}, omit_fields={}):
         def get_value(type_description, value, name):
             if isinstance(value, types.ListType):
-                if not (type_description[2] is types.FloatType or type_description[2] is types.IntType):
+                if not (type_description[2] is types.FloatType or type_description[2] is types.IntType or type_description[2] is types.StringType):
                     return [val.to_dict(minimize=minimize, properties=properties.get(name, {}), omit_fields=omit_fields.get(name, {})) for val in value]
                 else:
                     return [val for val in value]
