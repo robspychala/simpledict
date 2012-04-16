@@ -220,7 +220,7 @@ class Dictionary:
             key_metadata = fields_minimized_map[self._get_minimized_name(key)]
             if len(key_metadata) == 3:
                 if isinstance(value, key_metadata[1]):
-                    if len(value) > 0 and not isinstance(value[0], key_metadata[2]):
+                    if len(value) > 0 and not isinstance(value[0], key_metadata[2]) and not key_metadata[2] is types.StringType:
                         setattr(self, key, [key_metadata[2](**obj) for obj in self.__dict__[key]]);
                 else:
                     raise ValueError("%s type mis match; expecting %s for %s and got %s" % (self.__class__.__name__, key_metadata, key, value))
