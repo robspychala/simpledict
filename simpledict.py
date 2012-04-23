@@ -227,23 +227,27 @@ class Dictionary:
             elif len(key_metadata) == 2 and not isinstance(value, key_metadata[1]):
                 setattr(self, key, key_metadata[1](**self.__dict__[key]))
         
-    def to_dict(self, minimize=True, strip_none=False, properties={}, omit_fields={}):
+    def to_dict(self, minimize=True, strip_none=False, strip_undefined=True, properties={}, omit_fields={}):
+        fields_map = self._get_fields_map(minimize_id_key=False)
+        fields_map.update({"_id": ("_id",)})
         def get_value(type_description, value, name):
             if isinstance(value, types.ListType):
                 if not (type_description[2] is types.FloatType or type_description[2] is types.IntType or type_description[2] is types.StringType):
-                    return [val.to_dict(minimize=minimize, properties=properties.get(name, {}), omit_fields=omit_fields.get(name, {})) for val in value]
+                    return [val.to_dict(minimize=minimize, properties=properties.get(name, {}), strip_undefined=strip_undefined, omit_fields=omit_fields.get(name, {})) for val in value]
                 else:
                     return [val for val in value]
             elif isinstance(value, types.InstanceType):
-                return value.to_dict(minimize=minimize, properties=properties.get(name, {}), omit_fields=omit_fields.get(name, {}))
+                return value.to_dict(minimize=minimize, properties=properties.get(name, {}), strip_undefined=strip_undefined, omit_fields=omit_fields.get(name, {}))
             else:
                 return value
         def omit(name):
-            if name in omit_fields.keys() and not isinstance(omit_fields[name], types.DictType) or strip_none and not full_dict[name]:
+            fields_map_omit = self._get_fields_map(minimize_id_key=False)
+            fields_map_omit.update({"_id": ("_id",)})
+            if strip_undefined and name not in fields_map_omit:
+                return True
+            elif name in omit_fields.keys() and not isinstance(omit_fields[name], types.DictType) or strip_none and not full_dict[name]:
                 return True
             return False
-        fields_map = self._get_fields_map(minimize_id_key=False)
-        fields_map.update({"_id": ("_id",)})
         full_dict = dict((prop, getattr(self, prop)) for prop in properties if hasattr(self, prop))
         full_dict.update(self.__dict__)
         fields_map.update(dict((key, (None,)) for key in full_dict.keys() if key not in fields_map))
